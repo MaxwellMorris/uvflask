@@ -80,16 +80,15 @@
             ExecStart = "${self.packages.${pkgs.system}.default}/bin/uvflask";
             Restart = "always";
             WorkingDirectory = "/var/lib/uvflask";
-            User = "uvflask";};
+            User = "uvflask";
           };
         };
-      users.users.uvflask = {
-        isSystemUser = true;
-        description = "User for running uvflask service";
+        users.users.uvflask = {
+          isSystemUser = true;
+          description = "User for running uvflask service";
+        };
+
+        networking.firewall.allowedTCPPorts = [ 5000 ];
       };
-
-      networking.firewall.allowedTCPPorts = [ 5000 ];
-      };
-
-
+    };
 }
