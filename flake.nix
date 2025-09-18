@@ -92,19 +92,36 @@
         networking.firewall.allowedTCPPorts = [ 5000 ];
       };
 
-      darwinModules.uvflask = { config, pkgs, ... }: {
-        launchd.daemons.uvflask = {
-          serviceConfig = {
-            ProgramArguments = [
-              "${self.packages.${pkgs.system}.default}/bin/uvflask"
-            ];
-            KeepAlive = true;            # like Restart=always
-            WorkingDirectory = "/Users/${config.users.primaryUser}/.local/share/uvflask";
-            StandardOutPath = "/tmp/uvflask.log";
-            StandardErrorPath = "/tmp/uvflask-error.log";
+
+
+      darwinModules.uvflask = { config, lib, pkgs, ... }:
+      let
+        cfg = config.services.uvflask;
+      in {
+        options.services.uvflask = {
+          enable = lib.mkEnableOption "Flask uvflask service";
+          user = lib.mkOption {
+            type = lib.types.str;
+            example = "alice";
+            description = "User that runs the uvflask service";
           };
         };
+
+        config = lib.mkIf cfg.enable {
+          launchd.daemons.uvflask = {
+            serviceConfig = {
+              ProgramArguments = [ "${self.packages.${pkgs.system}.default}/bin/uflask" ];
+              KeepAlive = true;
+              WorkingDirectory = "/Users/${cfg.user}/.local/share/uvflask";
+              StandardOutPath = "/tmp/uvflask.log";
+              StandardErrorPath = "/tmp/uvflask-error.log";
+            };
+          };
+        };
+
       };
+
+
 
     };
 
