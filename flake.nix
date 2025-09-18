@@ -72,7 +72,7 @@
         default = pythonSets.${system}.mkVirtualEnv "flask-env" workspace.deps.default;
       });
 
-      nixosModules.uvflask = { config, pkgs, ... }: {
+      nixosModules.uvflask = {self, config, pkgs, ... }: {
         systemd.services.uvflask = {
           description = "Flask app uv flask";
           wantedBy = ["multi-user.target"];
