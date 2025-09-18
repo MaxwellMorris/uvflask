@@ -77,10 +77,10 @@
           description = "Flask app uv flask";
           wantedBy = ["multi-user.target"];
           serviceConfig = {
-          ExecStart = "${pkgs.python3}/bin/python ${self.packages.${pkgs.system}.default}/bin/uvflask";
-          Restart = "always";
-          WorkingDirectory = "/var/lib/uvflask";
-          User = "uvflask";};
+            ExecStart = "${pkgs.python3}/bin/python ${self.packages.${pkgs.system}.default}/bin/uvflask";
+            Restart = "always";
+            WorkingDirectory = "/var/lib/uvflask";
+            User = "uvflask";};
           };
         };
       user.user.uvflask = {
