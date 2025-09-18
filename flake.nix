@@ -91,5 +91,21 @@
 
         networking.firewall.allowedTCPPorts = [ 5000 ];
       };
+
+      darwinModules.uvflask = { config, pkgs, ... }: {
+        launchd.daemons.uvflask = {
+          serviceConfig = {
+            ProgramArguments = [
+              "${self.packages.${pkgs.system}.default}/bin/uvflask"
+            ];
+            KeepAlive = true;            # like Restart=always
+            WorkingDirectory = "/Users/${config.users.primaryUser}/.local/share/uvflask";
+            StandardOutPath = "/tmp/uvflask.log";
+            StandardErrorPath = "/tmp/uvflask-error.log";
+          };
+        };
+      };
+
     };
+
 }
