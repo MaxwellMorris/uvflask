@@ -102,15 +102,17 @@
           enable = lib.mkEnableOption "Flask uvflask service";
           user = lib.mkOption {
             type = lib.types.str;
-            example = "alice";
-            description = "User that runs the uvflask service";
+            default = "nobody";
+            description = "User that runs uvflask on Darwin";
           };
         };
 
         config = lib.mkIf cfg.enable {
           launchd.daemons.uvflask = {
             serviceConfig = {
-              ProgramArguments = [ "${self.packages.${pkgs.system}.default}/bin/uflask" ];
+              ProgramArguments = [
+                "${self.packages.${pkgs.system}.default}/bin/uvflask"
+              ];
               KeepAlive = true;
               WorkingDirectory = "/Users/${cfg.user}/.local/share/uvflask";
               StandardOutPath = "/tmp/uvflask.log";
@@ -118,7 +120,6 @@
             };
           };
         };
-
       };
 
 
