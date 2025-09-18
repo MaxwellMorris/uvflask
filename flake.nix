@@ -83,7 +83,7 @@
             User = "uvflask";};
           };
         };
-      user.user.uvflask = {
+      users.users.uvflask = {
         isSystemUser = true;
         description = "User for running uvflask service";
       };
