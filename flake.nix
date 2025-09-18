@@ -44,6 +44,7 @@
             overlay
           ])
       );
+
     in {
       devShells = forAllSystems (system:
         let
@@ -70,5 +71,23 @@
       packages = forAllSystems (system: {
         default = pythonSets.${system}.mkVirtualEnv "flask-env" workspace.deps.default;
       });
-    };
+
+      nixosModules.uvflask = { config, pkgs, ... }: {
+        systemd.services.uvflask = {
+          description = "Flask app uv flask";
+          wantedBy = ["multi-user.target"];
+          serviceConfig = "${pkgs.python3}/bin/python ${self.packages.${pkgs.system}.default}/bin/uvflask";
+          Restart = "always";
+          WorkingDirectory = "/var/lib/uvflask";
+          User = "uvflask";};
+        };
+      user.user.uvflask = {
+        isSystemUser = true;
+        description = "User for running uvflask service";
+      };
+
+      networking.firewall.allowedTCPPorts = [ 5000 ];
+      };
+
+
 }
