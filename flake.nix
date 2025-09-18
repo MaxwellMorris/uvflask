@@ -86,6 +86,7 @@
         users.users.uvflask = {
           isSystemUser = true;
           description = "User for running uvflask service";
+          group = "uvflask";
         };
 
         networking.firewall.allowedTCPPorts = [ 5000 ];
