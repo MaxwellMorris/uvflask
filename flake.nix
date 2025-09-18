@@ -76,10 +76,12 @@
         systemd.services.uvflask = {
           description = "Flask app uv flask";
           wantedBy = ["multi-user.target"];
-          serviceConfig = "${pkgs.python3}/bin/python ${self.packages.${pkgs.system}.default}/bin/uvflask";
+          serviceConfig = {
+          ExecStart = "${pkgs.python3}/bin/python ${self.packages.${pkgs.system}.default}/bin/uvflask";
           Restart = "always";
           WorkingDirectory = "/var/lib/uvflask";
           User = "uvflask";};
+          };
         };
       user.user.uvflask = {
         isSystemUser = true;
