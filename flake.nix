@@ -94,33 +94,32 @@
 
 
 
-      darwinModules.uvflask = { self, config, lib, pkgs, ... }:
-      let
-        cfg = config.services.uvflask;
-      in {
-        options.services.uvflask = {
-          enable = lib.mkEnableOption "Flask uvflask service";
-          user = lib.mkOption {
-            type = lib.types.str;
-            default = "nobody";
-            description = "User that runs uvflask on Darwin";
+      darwinModules.uvflask =
+        { config, lib, pkgs, ... }:
+        let
+          cfg = config.services.uvflask;
+        in {
+          options.services.uvflask = {
+            enable = lib.mkEnableOption "Flask uvflask service";
+            user = lib.mkOption {
+              type = lib.types.str;
+              default = "nobody";
+              description = "User that runs uvflask on Darwin";
+            };
           };
-        };
 
-        config = lib.mkIf cfg.enable {
-          launchd.daemons.uvflask = {
-            serviceConfig = {
-              ProgramArguments = [
+          config = lib.mkIf cfg.enable {
+            launchd.daemons.uvflask = {
+              serviceConfig.ProgramArguments = [
                 "${self.packages.${pkgs.system}.default}/bin/uvflask"
               ];
-              KeepAlive = true;
-              WorkingDirectory = "/Users/${cfg.user}/.local/share/uvflask";
-              StandardOutPath = "/tmp/uvflask.log";
-              StandardErrorPath = "/tmp/uvflask-error.log";
+              serviceConfig.KeepAlive = true;
+              serviceConfig.WorkingDirectory = "/Users/${cfg.user}/.local/share/uvflask";
+              serviceConfig.StandardOutPath = "/tmp/uvflask.log";
+              serviceConfig.StandardErrorPath = "/tmp/uvflask-error.log";
             };
           };
         };
-      };
 
 
 
