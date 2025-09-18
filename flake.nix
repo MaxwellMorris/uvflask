@@ -88,6 +88,7 @@
           description = "User for running uvflask service";
           group = "uvflask";
         };
+        users.groups.uvflask = {};
 
         networking.firewall.allowedTCPPorts = [ 5000 ];
       };
