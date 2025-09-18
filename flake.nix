@@ -94,32 +94,50 @@
 
 
 
-      darwinModules.uvflask =
-        { config, lib, pkgs, ... }:
-        let
-          cfg = config.services.uvflask;
-        in {
-          options.services.uvflask = {
-            enable = lib.mkEnableOption "Flask uvflask service";
-            user = lib.mkOption {
-              type = lib.types.str;
-              default = "nobody";
-              description = "User that runs uvflask on Darwin";
-            };
-          };
+    darwinModules.uvflask = { config, lib, pkgs, self, ... }:
 
-          config = lib.mkIf cfg.enable {
-            launchd.daemons.uvflask = {
-              serviceConfig.ProgramArguments = [
-                "${self.packages.${pkgs.system}.default}/bin/uvflask"
-              ];
-              serviceConfig.KeepAlive = true;
-              serviceConfig.WorkingDirectory = "/Users/${cfg.user}/.local/share/uvflask";
-              serviceConfig.StandardOutPath = "/tmp/uvflask.log";
-              serviceConfig.StandardErrorPath = "/tmp/uvflask-error.log";
-            };
+    with lib;
+
+    let
+      cfg = config.services.uvflask;
+    in
+    {
+      options.services.uvflask = {
+        enable = mkEnableOption (mdDoc "Flask uvflask service");
+
+        package = mkOption {
+          type = types.package;
+          default = self.packages.${pkgs.system}.default;
+          defaultText = literalExpression "self.packages.${pkgs.system}.default";
+          description = mdDoc "The package that provides the uvflask binary.";
+        };
+
+        user = mkOption {
+          type = types.str;
+          default = "nobody";
+          description = mdDoc "User that runs uvflask on Darwin";
+        };
+      };
+
+      config = mkIf cfg.enable {
+        # Make uvflask available in PATH
+        environment.systemPackages = [ cfg.package ];
+
+        launchd.daemons.uvflask = {
+          script = ''
+            mkdir -p /Users/${cfg.user}/.local/share/uvflask
+            exec ${cfg.package}/bin/uvflask
+          '';
+          serviceConfig = {
+            KeepAlive = true;
+            RunAtLoad = true;
+            WorkingDirectory = "/Users/${cfg.user}/.local/share/uvflask";
+            StandardOutPath = "/tmp/uvflask.log";
+            StandardErrorPath = "/tmp/uvflask-error.log";
           };
         };
+      };
+    }
 
 
 
