@@ -79,7 +79,6 @@
           serviceConfig = {
             ExecStart = "${self.packages.${pkgs.system}.default}/bin/uvflask";
             Restart = "always";
-            WorkingDirectory = "/var/lib/uvflask";
             User = "uvflask";
           };
         };
